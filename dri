@@ -1,47 +1,68 @@
 #!/bin/sh
 
 arg1=${1:-help}
+arg2=${2:-day}
+
 date=`date +%Y/%m/%d/%H:%M`
 month=`date +%Y/%m`
 day=`date +%d`
-repo_file="$HOME/.drcli/$month/$day.txt"
+
+daily_repo_file="$HOME/.drcli/daily/$month/$day.txt"
+monthly_repo_file="$HOME/.drcli/monthly/$month.txt"
+header="When, Project, Category, What you did, How long"
+if [ ! -e $daily_repo_file ]; then
+  echo $header >> $daily_repo_file
+fi
+
+if [ ! -e $monthly_repo_file ]; then
+  echo $header >> $monthly_repo_file
+fi
 
 main(){
   if [ $arg1 = "s" ]; then
-    show_repos
+    if [ $arg2 = "day" ]; then
+      show_daily_repos
+    elif [ $arg2 = "month" ]; then
+      show_montly_repos
+    else
+      echo "unknown option"
+    fi
   elif [ $arg1 = "w" ]; then
     write_repos
   elif [ $arg1 = "help" ]; then
     show_help
+  else
+    echo "unknown option"
   fi
 }
 
 show_help(){
   echo "drcli - daily repos on cli "
   echo ""
-  echo "  need tty-table"
+  echo "(before run 'npm install tty-table')"
+  echo ""
   echo ""
   echo "Commands:"
   echo ""
-  echo "      s - show today's repo"
-  echo "      w - write new today's repo"
+  echo "      s, s day  - show today's repo"
+  echo "      s month   - show month's repo"
+  echo "      w         - write new today's repo"
   echo ""
   echo ""
 }
 
-show_repos(){
-  head $repo_file | tty-table
+show_daily_repos(){
+  head $daily_repo_file | tty-table
+}
+
+show_montly_repos(){
+  head $monthly_repo_file | tty-table
 }
 
 write_repos(){
 
   mkdir -p "$HOME/.drcli/$month"
-  repo_file="$HOME/.drcli/$month/$day.txt"
-  if [ -e $repo_file ]; then
-    echo
-  else
-    echo "When, Project, Category, What you did, How long" >> $repo_file
-  fi
+
   tmp_file="$HOME/.drcli/$month/temp.txt"
 
   q1='# Project? \n'
@@ -60,19 +81,20 @@ write_repos(){
   do
     if [[ $line != "#"* ]]; then
       case "$line" in
-        0 ) result=$result"development" ;;
-        1 ) result=$result"managing" ;;
-        2 ) result=$result"meeting" ;;
-        3 ) result=$result"others" ;;
-        * ) result=$result$line ;;
+        0 ) result+="development" ;;
+        1 ) result+="managing" ;;
+        2 ) result+="meeting" ;;
+        3 ) result+="others" ;;
+        * ) result+=$line ;;
       esac
     else
-      result=$result", "
+      result+=", "
     fi
 
     count=`expr $count + 1`
     if [ $count -eq 8 ]; then
-      echo $result >> $repo_file
+      echo $result >> $daily_repo_file
+      echo $result >> $monthly_repo_file
     fi
   done
 
