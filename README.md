@@ -13,7 +13,7 @@ dri w
 ```
 then start vim
 
-### show today's list
+### show today's repo list
 ```
 dri s
 ```
