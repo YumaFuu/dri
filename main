@@ -1,0 +1,80 @@
+#!/bin/sh
+
+arg1=${1:-help}
+repo_file="$HOME/dri/$month/$day.txt"
+
+main(){
+  if [ $arg1 = "s" ]; then
+    show_repos
+  elif [ $arg1 = "w" ]; then
+    write_repos
+  elif [ $arg1 = "help" ]; then
+    show_help
+  fi
+}
+
+show_help(){
+  echo "drcli - daily repos on cli "
+  echo ""
+  echo "  need tty-table"
+  echo ""
+  echo "Commands:"
+  echo ""
+  echo "      s - show today's repo"
+  echo "      w - write new today's repo"
+  echo ""
+  echo ""
+}
+
+show_repos(){
+  head $repo_file | tty-table
+}
+
+write_repos(){
+  date=`date +%Y/%m/%d/%H:%M`
+  month=`date +%Y/%m`
+  day=`date +%d`
+
+  mkdir -p "$HOME/dri/$month"
+  repo_file="$HOME/dri/$month/$day.txt"
+  if [ -e $repo_file ]; then
+  else
+    echo "When, Category, What you did, How long" >> $repo_file
+  fi
+  tmp_file="$HOME/dri/$month/temp.txt"
+
+  q1='# Category? { 0: development, 1: managing, 2: meeting, 3:others }\n'
+  q2='# What you did?\n'
+  q3='# How long?'
+  questions=$q1$q2$q3
+  echo $questions > $tmp_file
+
+  vim $tmp_file
+  chmod 775 $tmp_file
+
+  result="$date"
+  count=0
+  cat $tmp_file | while read line
+  do
+    if [[ $line != "#"* ]]; then
+      case "$line" in
+        0 ) result=$result"development" ;;
+        1 ) result=$result"managing" ;;
+        2 ) result=$result"meeting" ;;
+        3 ) result=$result"others" ;;
+        * ) result=$result$line ;;
+      esac
+    else
+      result=$result", "
+    fi
+
+    count=`expr $count + 1`
+    if [$count -eq 8]; then
+      echo $result >> $repo_file
+    fi
+  done
+
+  rm $tmp_file
+  echo "Success"
+}
+
