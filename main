@@ -1,7 +1,10 @@
 #!/bin/sh
 
 arg1=${1:-help}
-repo_file="$HOME/dri/$month/$day.txt"
+date=`date +%Y/%m/%d/%H:%M`
+month=`date +%Y/%m`
+day=`date +%d`
+repo_file="$HOME/.drcli/$month/$day.txt"
 
 main(){
   if [ $arg1 = "s" ]; then
@@ -31,22 +34,21 @@ show_repos(){
 }
 
 write_repos(){
-  date=`date +%Y/%m/%d/%H:%M`
-  month=`date +%Y/%m`
-  day=`date +%d`
 
-  mkdir -p "$HOME/dri/$month"
-  repo_file="$HOME/dri/$month/$day.txt"
+  mkdir -p "$HOME/.drcli/$month"
+  repo_file="$HOME/.drcli/$month/$day.txt"
   if [ -e $repo_file ]; then
+    echo
   else
-    echo "When, Category, What you did, How long" >> $repo_file
+    echo "When, Project, Category, What you did, How long" >> $repo_file
   fi
-  tmp_file="$HOME/dri/$month/temp.txt"
+  tmp_file="$HOME/.drcli/$month/temp.txt"
 
-  q1='# Category? { 0: development, 1: managing, 2: meeting, 3:others }\n'
-  q2='# What you did?\n'
-  q3='# How long?'
-  questions=$q1$q2$q3
+  q1='# Project? \n'
+  q2='# Category? { 0: development, 1: managing, 2: meeting, 3:others }\n'
+  q3='# What you did?\n'
+  q4='# How long?'
+  questions=$q1$q2$q3$q4
   echo $questions > $tmp_file
 
   vim $tmp_file
@@ -69,7 +71,7 @@ write_repos(){
     fi
 
     count=`expr $count + 1`
-    if [$count -eq 8]; then
+    if [ $count -eq 8 ]; then
       echo $result >> $repo_file
     fi
   done
@@ -78,3 +80,4 @@ write_repos(){
   echo "Success"
 }
 
+main
