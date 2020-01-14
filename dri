@@ -56,7 +56,7 @@ show_daily_repos(){
 }
 
 show_montly_repos(){
-  head $monthly_repo_file | tty-table
+  less $monthly_repo_file | tty-table
 }
 
 write_repos(){
