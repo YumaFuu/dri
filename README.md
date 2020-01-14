@@ -4,7 +4,7 @@ daily repo on cli
 ### before use
 ```
 gem install tty-table
-or
+#or
 npm install tty-table
 ```
 
