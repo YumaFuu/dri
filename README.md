@@ -3,6 +3,8 @@ daily repo on cli
 
 ### before use
 ```
+gem install tty-table
+or
 npm install tty-table
 ```
 
