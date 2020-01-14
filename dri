@@ -7,8 +7,8 @@ date=`date +%Y/%m/%d/%H:%M`
 month=`date +%Y/%m`
 day=`date +%d`
 
-daily_repo_file="$HOME/.drcli/daily/$month/$day.txt"
-monthly_repo_file="$HOME/.drcli/monthly/$month.txt"
+daily_repo_file="$HOME/.dri/daily/$month/$day.csv"
+monthly_repo_file="$HOME/.dri/monthly/$month.csv"
 header="When, Project, Category, What you did, How long"
 if [ ! -e $daily_repo_file ]; then
   echo $header >> $daily_repo_file
@@ -37,7 +37,7 @@ main(){
 }
 
 show_help(){
-  echo "drcli - daily repos on cli "
+  echo "dri - daily repos on cli "
   echo ""
   echo "(before run 'npm install tty-table')"
   echo ""
@@ -61,9 +61,9 @@ show_montly_repos(){
 
 write_repos(){
 
-  mkdir -p "$HOME/.drcli/$month"
+  mkdir -p "$HOME/.dri/$month"
 
-  tmp_file="$HOME/.drcli/$month/temp.txt"
+  tmp_file="$HOME/.dri/$month/temp.txt"
 
   q1='# Project? \n'
   q2='# Category? { 0: development, 1: managing, 2: meeting, 3:others }\n'
